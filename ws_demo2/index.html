@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>聊天</title>
+</head>
+<body>
+<input type="text" id="sendText"/>
+<button id="sendBtn">发送</button>
+</body>
+<script>
+var websocket = new WebSocket("ws://localhost:3000/");
+
+function showMessage(str,type){
+  var p = document.createElement("p");
+  p.innerHTML = str;
+  if(type =="enter"){
+  	p.style.color="blue"
+  }else if(type == "leave"){
+  	p.style.color="red";
+  }
+  document.body.appendChild(p);
+}
+websocket.onopen = function () {
+	console.log("websocket open");
+ document.getElementById("sendBtn").onclick = function(){
+		var txt = document.getElementById("sendText").value;
+
+		if(txt){
+			websocket.send(txt);
+		}
+		
+	}
+
+	}
+	websocket.onclose = function () {
+	console.log("websocket close");
+	}
+	websocket.onmessage = function (e) {
+		console.log(e);
+		var mes = JSON.parse(e.data);
+		showMessage(mes.data,mes.type);
+	}
+</script>
+</html>
